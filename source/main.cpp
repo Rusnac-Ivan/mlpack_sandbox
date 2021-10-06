@@ -1,4 +1,4 @@
-#include <mvisus-version.h>
+#include <mlpack_sandbox-version.h>
 #include <MLTest.h>
 #include <iostream>
 
@@ -22,8 +22,8 @@ void test_open_blas()
 
 int main(int argc, char* argv[])
 {
-    std::cout << "Project Name: " << MVISUS_PROJECT_NAME << std::endl;
-    std::cout << "Project Description: " << MVISUS_PROJECT_DESCRIPTION << std::endl;
+    std::cout << "Project Name: " << MLPACK_SANDBOX_PROJECT_NAME << std::endl;
+    std::cout << "Project Description: " << MLPACK_SANDBOX_PROJECT_DESCRIPTION << std::endl;
     mv::MLTest app;
     app.Run();
     //test_open_blas();

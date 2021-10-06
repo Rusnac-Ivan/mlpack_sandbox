@@ -8,6 +8,7 @@
 
 #include <iostream>
 #include "MNISTReader.h"
+#include <mlpack_sandbox-version.h>
 //#include <armadillo>
 
 using namespace mlpack;
@@ -86,10 +87,12 @@ namespace mv
         arma::mat mnistTestLabels;
         arma::mat mnistTestData;
 
-        MNISTReader reader;
-        reader.Load("D:\\CPP\\Data\\MNIST_DATABASE\\training\\train-labels.idx1-ubyte", "D:\\CPP\\Data\\MNIST_DATABASE\\training\\train-images.idx3-ubyte", mnistTrainLabels, mnistTrainData);
+        std::string mnist_data_path(MLPACK_SANDBOX_MNIST_DATA_PATH);
 
-        reader.Load("D:\\CPP\\Data\\MNIST_DATABASE\\testing\\t10k-labels.idx1-ubyte", "D:\\CPP\\Data\\MNIST_DATABASE\\testing\\t10k-images.idx3-ubyte", mnistTestLabels, mnistTestData);
+        MNISTReader reader;
+        reader.Load(std::string(mnist_data_path + "/training/train-labels.idx1-ubyte").c_str(), std::string(mnist_data_path + "/training/train-images.idx3-ubyte").c_str(), mnistTrainLabels, mnistTrainData);
+
+        reader.Load(std::string(mnist_data_path + "/testing/t10k-labels.idx1-ubyte").c_str(), std::string(mnist_data_path + "/testing/t10k-images.idx3-ubyte").c_str(), mnistTestLabels, mnistTestData);
 
         const int L1 = 200; //number of neurons in the first layer
         const int L2 = 100; //number of neurons in the second layer
