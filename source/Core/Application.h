@@ -4,11 +4,11 @@
 class Application
 {
     private:
-        Application() {};
+        Application();
         Application(const Application&) = delete;
         Application& operator=(Application&) = delete;
     public:
-        static Application& Run(int argc, const char** argv, const char* version, const char* title);
+        static Application& Run(unsigned int width, unsigned int height, const char* title);
     private:
         void MainLoop();
 };

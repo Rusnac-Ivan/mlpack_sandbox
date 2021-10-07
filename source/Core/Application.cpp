@@ -1,7 +1,12 @@
 #include "Application.h"
 
+Application::Application()
+{
 
-Application& Application::Run(int argc, const char** argv, const char* version, const char* title)
+    MainLoop();
+}
+
+Application& Application::Run(unsigned int width, unsigned int height, const char* title)
 {
     static Application  instance;
     return instance;
@@ -9,5 +14,16 @@ Application& Application::Run(int argc, const char** argv, const char* version, 
 
 void Application::MainLoop()
 {
+	/*mView.OnInitialize();
+	while (mWindow.WindowIsOpen())
+	{
+		mWindow.PollEvents();
 
+
+		mView.OnUpdate();
+
+		mWindow.RenderGUI();
+		mWindow.SwapBuffers();
+	}
+	mView.OnFinalize();*/
 }
