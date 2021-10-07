@@ -8,9 +8,9 @@
 #define MLPACK_SANDBOX_VERSION_MAJOR         "1"
 #define MLPACK_SANDBOX_VERSION_MINOR         "0"
 #define MLPACK_SANDBOX_VERSION_PATCH         "0"
-#define MLPACK_SANDBOX_VERSION_REVISION      "503cc1bf2ee6"
+#define MLPACK_SANDBOX_VERSION_REVISION      "cc4ca7c63a0b"
 
 #define MLPACK_SANDBOX_VERSION               "1.0.0"
-#define MLPACK_SANDBOX_NAME_VERSION          "mlpack_sandbox v1.0.0 (503cc1bf2ee6)"
+#define MLPACK_SANDBOX_NAME_VERSION          "mlpack_sandbox v1.0.0 (cc4ca7c63a0b)"
 
-#define MLPACK_SANDBOX_MNIST_DATA_PATH       "D:/Repositories/mlpack_sandbox/MNIST_DATABASE"
+#define MLPACK_SANDBOX_MNIST_DATA_PATH       "D:/CPP/mlpack_sandbox/mlpack_sandbox/MNIST_DATABASE"
