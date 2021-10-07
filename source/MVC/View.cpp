@@ -1,5 +1,8 @@
 #include "View.h"
 #include <cstdio>
+#include <imgui.h>
+#include <backends/imgui_impl_opengl3.h>
+#include <backends/imgui_impl_glfw.h>
 
 static View* thiz = nullptr;
 
@@ -119,7 +122,7 @@ void View::Create(unsigned int width, unsigned int height, const char* title)
 		return;
 	}
 
-	//mGUI.Init(glsl_version);
+	mGUI.Init(glsl_version);
 
 	if (glfwRawMouseMotionSupported())
 		glfwSetInputMode(mGLFWWindow, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
@@ -130,19 +133,32 @@ void View::Create(unsigned int width, unsigned int height, const char* title)
 	glfwSetScrollCallback(mGLFWWindow, mouseScrollCallback);
 	glfwSetFramebufferSizeCallback(mGLFWWindow, framebufferSizeCallback);
 }
+
 void View::Destroy()
 {
-
+	if (mGLFWWindow != nullptr)
+	{
+		glfwDestroyWindow(mGLFWWindow);
+		glfwTerminate();
+	}
 }
 
 void View::OnInitialize()
 {
-    
+	glViewport(0, 0, mWidth, mHeight);
+	glClearColor(0.45f, 0.55f, 0.60f, 1.00f);
 }
+
 void View::OnUpdate()
 {
-    
+	glfwPollEvents();
+
+	glClear(GL_COLOR_BUFFER_BIT);
+	mGUI.Render();
+
+	glfwSwapBuffers(mGLFWWindow);
 }
+
 void View::OnFinalize()
 {
 
@@ -186,5 +202,42 @@ void View::OnKeyRelease(int key)
 
 void View::OnResize(int width, int height)
 {
-    
+	glViewport(0, 0, mWidth, mHeight);
+}
+
+
+//GUI
+void View::GUI::Init(const char* glsl_version)
+{
+	// Setup Dear ImGui context
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO(); (void)io;
+
+	// Setup Dear ImGui style
+	ImGui::StyleColorsDark();
+
+	// Setup Platform/Renderer backends
+	ImGui_ImplGlfw_InitForOpenGL(thiz->mGLFWWindow, true);
+	ImGui_ImplOpenGL3_Init(glsl_version);
+}
+
+void View::GUI::Render()
+{
+	// Start the Dear ImGui frame
+	ImGui_ImplOpenGL3_NewFrame();
+	ImGui_ImplGlfw_NewFrame();
+	ImGui::NewFrame();
+
+	DrawElements();
+
+	// Rendering
+	ImGui::Render();
+	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+}
+
+void View::GUI::DrawElements()
+{
+	static bool show_demo_window = true;
+	ImGui::ShowDemoWindow(&show_demo_window);
 }

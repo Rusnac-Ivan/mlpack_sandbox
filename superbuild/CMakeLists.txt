@@ -82,7 +82,7 @@ ExternalProject_Add(armadillo
 #https://www.statwks.com/c/
 ExternalProject_Add(mlpack
     PREFIX                  ${LIBRARIES_PREFIX}/mlpack
-    DEPENDS                 armadillo
+    DEPENDS                 armadillo boost
     GIT_REPOSITORY          https://github.com/mlpack/mlpack.git
     GIT_TAG                 3.4.2
     CMAKE_ARGS              -DCMAKE_INSTALL_PREFIX:PATH=${LIBRARIES_INSTALL_PREFIX}/mlpack -DCMAKE_DEBUG_POSTFIX=$<$<CONFIG:Debug>:d>
@@ -125,7 +125,7 @@ ExternalProject_Add(glfw
 ExternalProject_Add(imgui
     PREFIX                  ${LIBRARIES_PREFIX}/imgui
     DEPENDS                 glfw
-    GIT_REPOSITORY          https://github.com/ocornut/imgui.git
+    GIT_REPOSITORY          https://github.com/ocornut/imgui.git 
     GIT_TAG                 v1.84.2
     UPDATE_DISCONNECTED     TRUE
     UPDATE_COMMAND          ""
