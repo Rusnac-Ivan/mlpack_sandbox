@@ -98,7 +98,7 @@ namespace mv
         const int L2 = 100; //number of neurons in the second layer
 
         const double RATIO = 0.1;
-        const int MAX_ITERATIONS = 2000000;
+        const int MAX_ITERATIONS = 2000;
         const double STEP_SIZE = 1.2e-3;
         const int BATCH_SIZE = 50;
 
@@ -113,6 +113,8 @@ namespace mv
         neural_network.Add<mlpack::ann::SigmoidLayer<> >();
         neural_network.Add<mlpack::ann::Linear<> >(L2, OUTPUT_SIZE);
         neural_network.Add<mlpack::ann::LogSoftMax<> >();
+
+       
 
         std::cout << "Start training ..." << std::endl;
 

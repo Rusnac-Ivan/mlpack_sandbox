@@ -1,14 +1,21 @@
 #ifndef _APPLICATION_H_
 #define _APPLICATION_H_
 
+#include "../MVC/View.h"
+#include "../MVC/Controller.h"
+#include "../MVC/Model.h"
+
 class Application
 {
+        View mView;
+        //Controller mController;
+        //Model mModel;
     private:
-        Application() {};
+        Application(unsigned int width, unsigned int height, const char* title);
         Application(const Application&) = delete;
         Application& operator=(Application&) = delete;
     public:
-        static Application& Run(int argc, const char** argv, const char* version, const char* title);
+        static Application& Run(unsigned int width, unsigned int height, const char* title);
     private:
         void MainLoop();
 };
