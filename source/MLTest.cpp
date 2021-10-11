@@ -9,11 +9,209 @@
 #include <iostream>
 #include "MNISTReader.h"
 #include <mlpack_sandbox-version.h>
+
+#include "TrainingCallbacks.hpp"
 //#include <armadillo>
 
 using namespace mlpack;
 using namespace mlpack::neighbor; // NeighborSearch and NearestNeighborSort
 using namespace mlpack::metric; // ManhattanDistance
+
+class ProgressBar
+{
+public:
+    /**
+     * Set up the progress bar callback class with the given width and output
+     * stream.
+     *
+     * @param widthIn Width of the bar.
+     * @param ostream Ostream which receives output from this object.
+     */
+    ProgressBar(){}
+    /*ProgressBar(const size_t widthIn = 70,
+        std::ostream& output = arma::get_cout_stream()) :
+        width(100.0 / widthIn),
+        output(output),
+        objective(0),
+        epochs(0),
+        epochSize(0),
+        step(1),
+        steps(0),
+        newEpoch(false),
+        epoch(1)
+
+
+    }*/
+
+
+    
+
+    /**
+     * Callback function called at the begin of a pass over the data.
+     *
+     * @param optimizer The optimizer used to update the function.
+     * @param function Function to optimize.
+     * @param coordinates Starting point.
+     * @param epochIn The index of the current epoch.
+     * @param objective Objective value of the current point.
+     */
+    template<typename OptimizerType, typename FunctionType, typename MatType>
+    void BeginEpoch(OptimizerType& /* optimizer */,
+        FunctionType& /* function */,
+        const MatType& /* coordinates */,
+        const size_t epochIn,
+        const double /* objective */)
+    {
+        std::cout << "BeginEpoch\n";
+    }
+
+    /**
+     * Callback function called once a step is taken.
+     *
+     * @param optimizer The optimizer used to update the function.
+     * @param function Function to optimize.
+     * @param coordinates Starting point.
+     * @param objective Objective value of the current point.
+     */
+    template<typename OptimizerType, typename FunctionType, typename MatType>
+    void StepTaken(OptimizerType& /* optimizer */,
+        FunctionType& /* function */,
+        const MatType& /* coordinates */)
+    {
+        std::cout << "StepTaken loss: " << objective / (double)step << "\n";
+        
+    }
+
+    /**
+     * Callback function called at any call to Evaluate().
+     *
+     * @param optimizer The optimizer used to update the function.
+     * @param function Function to optimize.
+     * @param coordinates Starting point.
+     * @param objectiveIn Objective value of the current point.
+     */
+    template<typename OptimizerType, typename FunctionType, typename MatType>
+    void Evaluate(OptimizerType& optimizer,
+        FunctionType& /* function */,
+        const MatType& /* coordinates */,
+        const double objectiveIn)
+    {
+        objective += objectiveIn / optimizer.BatchSize();
+        steps++;
+        std::cout << "Evaluate\n";
+    }
+
+    /**
+     * Callback function called at the end of a pass over the data.
+     *
+     * @param optimizer The optimizer used to update the function.
+     * @param function Function to optimize.
+     * @param coordinates Starting point.
+     * @param epoch The index of the current epoch.
+     * @param objective Objective value of the current point.
+     */
+    template<typename OptimizerType, typename FunctionType, typename MatType>
+    void EndEpoch(OptimizerType& /* optimizer */,
+        FunctionType& /* function */,
+        const MatType& /* coordinates */,
+        const size_t /* epoch */,
+        const double objective)
+    {
+        std::cout << "EndEpoch\n";
+    }
+
+private:
+    //! Length of a single step (1%).
+    double width;
+
+    //! The output stream that all data is to be sent to; example: std::cout.
+    //std::ostream& output;
+
+    //! Objective over the current epoch.
+    double objective;
+
+    //! Total number of epochs
+    size_t epochs;
+
+    //! Number of steps per epoch.
+    size_t epochSize;
+
+    //! Current step number.
+    size_t step;
+
+    //! Number of steps taken.
+    size_t steps;
+
+    //! Indicates a new epoch.
+    bool newEpoch;
+
+    //! Locally-stored epoch.
+    size_t epoch;
+
+    //! Locally-stored step timer object.
+    arma::wall_clock stepTimer;
+
+    //! Locally-stored epoch timer object.
+    arma::wall_clock epochTimer;
+};
+
+
+class ExponentialDecay
+{
+public:
+    // Set up the exponential decay learning rate scheduler with the user
+    // specified decay value.
+    ExponentialDecay(const double decay) : learningRate(0) { }
+
+
+    // Callback function called at the start of the optimization process.
+    // In this example we will use this to save the initial learning rate.
+    template<typename OptimizerType, typename FunctionType, typename MatType>
+    void BeginOptimization(OptimizerType&  optimizer ,
+        FunctionType&  function,
+        MatType& coordinates)
+    {
+        // Save the initial learning rate.
+        learningRate = optimizer.StepSize();
+    }
+
+    // Callback function called at the end of a pass over the data. We are only
+    // interested in the current epoch and the optimizer, we ignore the rest.
+    template<typename OptimizerType, typename FunctionType, typename MatType>
+    void EndEpoch(OptimizerType& optimizer,
+        FunctionType& /* function */,
+        const MatType& /* coordinates */,
+        const size_t epoch,
+        const double objective)
+    {
+        // Update the learning rate.
+        /*optimizer.StepSize() = learningRate * (1.0 - std::pow(decay,
+            (double)epoch));*/
+        int a = 0;
+    }
+
+    template<typename OptimizerType, typename FunctionType, typename MatType>
+    bool Evaluate(OptimizerType& opt, FunctionType& function, const MatType& coordinates, const double objective)
+    {
+        int a = 0;
+        std::cout << "\nThe optimization process called Evaluate()!" << std::endl;
+        return false; // Do not terminate, continue the optimization process.
+    }
+
+    double learningRate;
+};
+
+class CustomCallback
+{
+public:
+    template<typename OptimizerType, typename FunctionType, typename MatType>
+    bool Evaluate(OptimizerType& opt, FunctionType& function, const MatType& coordinates, const double objective)
+    {
+        int a = 0;
+        std::cout << "\nThe optimization process called Evaluate()!" << std::endl;
+        return false; // Do not terminate, continue the optimization process.
+    }
+};
 
 namespace mv
 {
@@ -98,9 +296,9 @@ namespace mv
         const int L2 = 100; //number of neurons in the second layer
 
         const double RATIO = 0.1;
-        const int MAX_ITERATIONS = 2000;
+        const int MAX_ITERATIONS = 60000;
         const double STEP_SIZE = 1.2e-3;
-        const int BATCH_SIZE = 50;
+        const int BATCH_SIZE = 100;
 
         const int INPUT_SIZE = mnistTrainData.n_rows;
         const int OUTPUT_SIZE = 10;
@@ -127,7 +325,7 @@ namespace mv
             0.999, // Exponential decay rate for the weighted infinity norm estimates.
             1e-8,  // Value used to initialise the mean squared gradient parameter.
             MAX_ITERATIONS, // Max number of iterations.
-            1e-5,           // Tolerance.
+            1e-6,           // Tolerance.
             true
         );
 
@@ -153,9 +351,12 @@ namespace mv
             mnistTrainData,
             mnistTrainLabels,
             optimizer,
-            ens::PrintLoss(),
-            ens::ProgressBar()
+            TrainingCallbacks()
         );
+
+        ens::PrintLoss();
+        ens::ProgressBar();
+        ens::EarlyStopAtMinLoss();
 
         arma::mat predictionTemp;
         neural_network.Predict(mnistTestData, predictionTemp);

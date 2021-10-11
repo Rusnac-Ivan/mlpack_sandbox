@@ -5,12 +5,15 @@
 #include <mlpack/methods/ann/layer/layer.hpp>
 #include <mlpack/methods/ann/ffn.hpp>
 
+
+
 class Model
 {
 	mlpack::ann::FFN<> mNeuralNetwork;
 public:
 	Model();
 	~Model();
+
 
 	
 private:
