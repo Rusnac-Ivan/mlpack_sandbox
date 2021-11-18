@@ -3,27 +3,16 @@
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <MVC/Model.h>
 
 class View
 {
-        class GUI
-        {
-            public:
-                GUI() {}
-                ~GUI() {}
-
-                void Init(const char* glsl_version);
-                void Render();
-
-            private:
-                void DrawElements();
-        };
-
     private:
         unsigned int mWidth;
         unsigned int mHeight;
         GLFWwindow* mGLFWWindow;
-        GUI mGUI;
+        std::thread mThread;
+        Model* mModel;
     public:
         View();
         ~View();
@@ -33,7 +22,7 @@ class View
         void Create(unsigned int width, unsigned int height, const char* title);
         void Destroy();
 
-        void OnInitialize();
+        void OnInitialize(Model* model);
         void OnUpdate();
         void OnFinalize();
 

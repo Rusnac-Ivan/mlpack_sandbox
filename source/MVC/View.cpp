@@ -122,7 +122,19 @@ void View::Create(unsigned int width, unsigned int height, const char* title)
 		return;
 	}
 
-	mGUI.Init(glsl_version);
+
+	// Setup Dear ImGui context
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO(); (void)io;
+
+	// Setup Dear ImGui style
+	ImGui::StyleColorsDark();
+
+	// Setup Platform/Renderer backends
+	ImGui_ImplGlfw_InitForOpenGL(thiz->mGLFWWindow, true);
+	ImGui_ImplOpenGL3_Init(glsl_version);
+
 
 	if (glfwRawMouseMotionSupported())
 		glfwSetInputMode(mGLFWWindow, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
@@ -132,6 +144,52 @@ void View::Create(unsigned int width, unsigned int height, const char* title)
 	glfwSetMouseButtonCallback(mGLFWWindow, mouseButtonCallback);
 	glfwSetScrollCallback(mGLFWWindow, mouseScrollCallback);
 	glfwSetFramebufferSizeCallback(mGLFWWindow, framebufferSizeCallback);
+
+	ImGuiStyle& style = ImGui::GetStyle();
+
+	style.FrameRounding = 0.f;
+	style.FramePadding = ImVec2(2.f, 2.f);
+	style.FrameBorderSize = 1.f;
+	style.WindowBorderSize = 1.f;
+	style.GrabRounding = 20.f;
+	style.GrabMinSize = 18.f;
+	style.WindowRounding = 0.f;
+	style.DisplayWindowPadding = ImVec2(2.f, 2.f);
+	style.WindowPadding = ImVec2(2.f, 2.f);
+	style.ItemInnerSpacing = ImVec2(4.f, 4.f);
+
+
+	/*float active_col_white[3] = {0.8f, 0.8f, 0.8f};
+	float hover_col_white[3] = { 0.7f, 0.7f, 0.7f };
+	float default_col_white[3] = { 0.6f, 0.6f, 0.6f };
+
+	float default_col[3] = { 66.f / 255.f, 68.f / 255.f, 69.f / 255.f };
+	float hover_col[3] = { 56.f / 255.f, 58.f / 255.f, 59.f / 255.f };
+	float active_col[3] = { 46.f / 255.f, 48.f / 255.f, 49.f / 255.f };
+
+	style.Colors[ImGuiCol_WindowBg] = ImVec4(0.25f, 0.25f, 0.25f, 0.8f);
+	style.Colors[ImGuiCol_TitleBg] = ImVec4(default_col[0], default_col[1], default_col[2], 1.f);
+	style.Colors[ImGuiCol_TitleBgActive] = ImVec4(active_col[0], active_col[1], active_col[2], 1.f);
+	style.Colors[ImGuiCol_SliderGrab] = ImVec4(default_col[0], default_col[1], default_col[2], 1.f);
+	style.Colors[ImGuiCol_SliderGrabActive] = ImVec4(active_col[0], active_col[1], active_col[2], 1.f);
+	style.Colors[ImGuiCol_Header] = ImVec4(default_col[0], default_col[1], default_col[2], 1.f);
+	style.Colors[ImGuiCol_HeaderHovered] = ImVec4(hover_col[0], hover_col[1], hover_col[2], 1.f);
+	style.Colors[ImGuiCol_HeaderActive] = ImVec4(active_col[0], active_col[1], active_col[2], 1.f);
+	style.Colors[ImGuiCol_FrameBg] = ImVec4(active_col_white[0], active_col_white[1], active_col_white[2], 0.16f);
+	style.Colors[ImGuiCol_FrameBgHovered] = ImVec4(active_col_white[0], active_col_white[1], active_col_white[2], 0.32f);
+	style.Colors[ImGuiCol_FrameBgActive] = ImVec4(active_col_white[0], active_col_white[1], active_col_white[2], 0.48f);
+	style.Colors[ImGuiCol_CheckMark] = ImVec4(active_col_white[0], active_col_white[1], active_col_white[2], 1.0f);
+	style.Colors[ImGuiCol_Tab] = ImVec4(default_col[0], default_col[1], default_col[2], 0.5f);
+	style.Colors[ImGuiCol_TabHovered] = ImVec4(hover_col[0], hover_col[1], hover_col[2], 1.0f);
+	style.Colors[ImGuiCol_TabActive] = ImVec4(active_col[0], active_col[1], active_col[2], 1.0f);
+	style.Colors[ImGuiCol_ResizeGrip] = ImVec4(active_col[0], active_col[1], active_col[2], 0.2f);
+	style.Colors[ImGuiCol_ResizeGripHovered] = ImVec4(active_col[0], active_col[1], active_col[2], 0.4f);
+	style.Colors[ImGuiCol_ResizeGripActive] = ImVec4(active_col[0], active_col[1], active_col[2], 0.6f);
+	style.Colors[ImGuiCol_Separator] = ImVec4(active_col[0], active_col[1], active_col[2], 0.6f);
+	style.Colors[ImGuiCol_Button] = ImVec4(default_col[0], default_col[1], default_col[2], 1.0f);
+	style.Colors[ImGuiCol_ButtonHovered] = ImVec4(active_col_white[0], active_col_white[1], active_col_white[2], 0.6f);
+	style.Colors[ImGuiCol_ButtonActive] = ImVec4(active_col_white[0], active_col_white[1], active_col_white[2], 1.0f);
+	style.Colors[ImGuiCol_Text] = ImVec4(1.f, 1.f, 1.f, 1.f);*/
 }
 
 void View::Destroy()
@@ -141,10 +199,20 @@ void View::Destroy()
 		glfwDestroyWindow(mGLFWWindow);
 		glfwTerminate();
 	}
+
+	mThread.join();
 }
 
-void View::OnInitialize()
+void View::OnInitialize(Model* model)
 {
+	mModel = model;
+	//std::thread thread;
+
+	mThread = std::thread(&Model::Train, mModel);
+	
+
+	//mModel->Train();
+
 	glViewport(0, 0, mWidth, mHeight);
 	glClearColor(0.45f, 0.55f, 0.60f, 1.00f);
 }
@@ -154,7 +222,30 @@ void View::OnUpdate()
 	glfwPollEvents();
 
 	glClear(GL_COLOR_BUFFER_BIT);
-	mGUI.Render();
+
+	// Start the Dear ImGui frame
+	ImGui_ImplOpenGL3_NewFrame();
+	ImGui_ImplGlfw_NewFrame();
+	ImGui::NewFrame();
+
+	//static bool show_demo_window = true;
+	ImGui::ShowDemoWindow();
+
+	ImGui::SetNextWindowSize(ImVec2(500.f, 400.f), ImGuiCond_FirstUseEver);
+	ImGui::Begin("Data", nullptr);
+	{
+		//ImGui::PlotLines("value", )
+		std::vector<float>& values = mModel->GetValues();
+		//ImGui::PlotLines("Curve", values.data(), values.size());
+		ImVec2 plot_size = ImVec2(ImGui::GetWindowSize().x - 10.f, ImGui::GetWindowSize().y - 40.f);
+		
+		ImGui::PlotLines("##Lines", values.data(), values.size(), NULL, NULL, FLT_MAX, FLT_MAX, plot_size);
+	}
+	ImGui::End();
+
+	// Rendering
+	ImGui::Render();
+	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
 	glfwSwapBuffers(mGLFWWindow);
 }
@@ -205,39 +296,3 @@ void View::OnResize(int width, int height)
 	glViewport(0, 0, mWidth, mHeight);
 }
 
-
-//GUI
-void View::GUI::Init(const char* glsl_version)
-{
-	// Setup Dear ImGui context
-	IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
-	ImGuiIO& io = ImGui::GetIO(); (void)io;
-
-	// Setup Dear ImGui style
-	ImGui::StyleColorsDark();
-
-	// Setup Platform/Renderer backends
-	ImGui_ImplGlfw_InitForOpenGL(thiz->mGLFWWindow, true);
-	ImGui_ImplOpenGL3_Init(glsl_version);
-}
-
-void View::GUI::Render()
-{
-	// Start the Dear ImGui frame
-	ImGui_ImplOpenGL3_NewFrame();
-	ImGui_ImplGlfw_NewFrame();
-	ImGui::NewFrame();
-
-	DrawElements();
-
-	// Rendering
-	ImGui::Render();
-	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-}
-
-void View::GUI::DrawElements()
-{
-	static bool show_demo_window = true;
-	ImGui::ShowDemoWindow(&show_demo_window);
-}

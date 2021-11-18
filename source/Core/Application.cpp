@@ -15,7 +15,7 @@ Application& Application::Run(unsigned int width, unsigned int height, const cha
 
 void Application::MainLoop()
 {
-	mView.OnInitialize();
+	mView.OnInitialize(&mModel);
 	while (mView.WindowIsOpen())
 	{
 		mView.OnUpdate();

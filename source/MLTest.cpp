@@ -375,5 +375,7 @@ namespace mv
         double classificationError = 1 - double(correct) / mnistTestData.n_cols;
         // Print out the classification error for the testing dataset.
         std::cout << "\nClassification Error for the Test set: " << classificationError << std::endl;
+
+        data::Save("model.xml", "model", neural_network, false);
 	}
 }

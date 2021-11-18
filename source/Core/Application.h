@@ -9,7 +9,7 @@ class Application
 {
         View mView;
         //Controller mController;
-        //Model mModel;
+        Model mModel;
     private:
         Application(unsigned int width, unsigned int height, const char* title);
         Application(const Application&) = delete;
