@@ -33,7 +33,7 @@ void Model::Train()
     const int L2 = 100; //number of neurons in the second layer
 
     const double RATIO = 0.1;
-    const int MAX_ITERATIONS = 60000;
+    const int MAX_ITERATIONS = 100000;
     const double STEP_SIZE = 1.2e-3;
     const int BATCH_SIZE = 100;
 

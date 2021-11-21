@@ -3,6 +3,7 @@
 #include <imgui.h>
 #include <backends/imgui_impl_opengl3.h>
 #include <backends/imgui_impl_glfw.h>
+#include <implot.h>
 
 static View* thiz = nullptr;
 
@@ -104,6 +105,8 @@ void View::Create(unsigned int width, unsigned int height, const char* title)
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+	glfwWindowHint(GLFW_SAMPLES, 4);
+
 
 	mGLFWWindow = glfwCreateWindow(mWidth, mHeight, title, nullptr, nullptr);
 
@@ -122,6 +125,7 @@ void View::Create(unsigned int width, unsigned int height, const char* title)
 		return;
 	}
 
+	glEnable(GL_MULTISAMPLE);
 
 	// Setup Dear ImGui context
 	IMGUI_CHECKVERSION();
@@ -134,6 +138,14 @@ void View::Create(unsigned int width, unsigned int height, const char* title)
 	// Setup Platform/Renderer backends
 	ImGui_ImplGlfw_InitForOpenGL(thiz->mGLFWWindow, true);
 	ImGui_ImplOpenGL3_Init(glsl_version);
+
+	ImPlotContext* implot_ctx = ImPlot::CreateContext();
+	if (implot_ctx == nullptr)
+	{
+		fprintf(stderr, "Failed to initialize ImPlot!\n");
+		return;
+	}
+	ImPlot::SetCurrentContext(implot_ctx);
 
 
 	if (glfwRawMouseMotionSupported())
@@ -231,15 +243,27 @@ void View::OnUpdate()
 	//static bool show_demo_window = true;
 	ImGui::ShowDemoWindow();
 
+	ImPlot::ShowDemoWindow();
+
 	ImGui::SetNextWindowSize(ImVec2(500.f, 400.f), ImGuiCond_FirstUseEver);
 	ImGui::Begin("Data", nullptr);
 	{
 		//ImGui::PlotLines("value", )
 		std::vector<float>& values = mModel->GetValues();
-		//ImGui::PlotLines("Curve", values.data(), values.size());
-		ImVec2 plot_size = ImVec2(ImGui::GetWindowSize().x - 10.f, ImGui::GetWindowSize().y - 40.f);
+		std::vector<float>& gradients = mModel->GetGradients();
+
 		
-		ImGui::PlotLines("##Lines", values.data(), values.size(), NULL, NULL, FLT_MAX, FLT_MAX, plot_size);
+		
+		static ImPlotAxisFlags flags = ImPlotAxisFlags_AutoFit;
+		
+		if (ImPlot::BeginPlot("##values", NULL, NULL, ImVec2(-1, 500.f), 0, flags, flags)) 
+		{
+			
+			ImPlot::PlotLine("val", values.data(), values.size());
+			ImPlot::PlotLine("grad", gradients.data(), gradients.size());
+			
+			ImPlot::EndPlot();
+		}
 	}
 	ImGui::End();
 

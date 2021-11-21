@@ -210,3 +210,20 @@ if(IMGUI_PATH)
 else()
     message(FATAL_ERROR "IMGUI_PATH is not set!")
 endif()
+
+if(IMPLOT_PATH)
+    #message(STATUS "IMGUI_PATH: ${IMGUI_PATH}")
+    set(IMPLOT_SRC 
+            ${IMPLOT_PATH}/implot.cpp
+            ${IMPLOT_PATH}/implot.h
+            ${IMPLOT_PATH}/implot_demo.cpp
+            ${IMPLOT_PATH}/implot_internal.h
+            ${IMPLOT_PATH}/implot_items.cpp
+    )
+    
+    message(STATUS "IMPLOT_SRC: ${IMPLOT_SRC}")
+    target_sources(${PROJECT_NAME} PRIVATE ${IMPLOT_SRC})
+    target_include_directories(${PROJECT_NAME} PRIVATE ${IMPLOT_PATH})
+else()
+    message(FATAL_ERROR "IMPLOT_PATH is not set!")
+endif()

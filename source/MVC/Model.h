@@ -20,7 +20,7 @@ class Model
 	mlpack::ann::FFN<> mNeuralNetwork;
 
 	std::vector<float> mValues;
-	std::vector<double> mGradients;
+	std::vector<float> mGradients;
 
 	uint32_t mInputSize;
 	uint32_t mOutputSize;
@@ -31,6 +31,7 @@ public:
 	~Model();
 
 	std::vector<float>& GetValues() { return mValues; }
+	std::vector<float>& GetGradients() { return mGradients; }
 
 	template<typename OptimizerType, typename FunctionType, typename MatType>
 	void BeginOptimization(OptimizerType& optimizer, FunctionType& function, MatType& coordinates)

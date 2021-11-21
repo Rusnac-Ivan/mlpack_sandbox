@@ -136,15 +136,30 @@ ExternalProject_Add(imgui
 ExternalProject_Get_property(imgui SOURCE_DIR)
 set(IMGUI_SOURCE_DIR ${SOURCE_DIR})
 
+ExternalProject_Add(implot
+    PREFIX                  ${LIBRARIES_PREFIX}/implot
+    DEPENDS                 imgui
+    GIT_REPOSITORY          https://github.com/epezent/implot.git
+    GIT_TAG                 v0.12
+    UPDATE_DISCONNECTED     TRUE
+    UPDATE_COMMAND          ""
+    CONFIGURE_COMMAND       ""
+    BUILD_COMMAND           ""
+    INSTALL_COMMAND         ""
+)
+ExternalProject_Get_property(implot SOURCE_DIR)
+set(IMPLOT_SOURCE_DIR ${SOURCE_DIR})
+
 ExternalProject_Add(mlpack_sandbox
     PREFIX              ${LIBRARIES_PREFIX}/mlpack_sandbox
-    DEPENDS             mlpack imgui
+    DEPENDS             mlpack imgui implot
     SOURCE_DIR          ${PROJECT_SOURCE_DIR}/../
     CMAKE_ARGS          -DBoost_USE_STATIC_RUNTIME:BOOL=OFF #-DLIBRARIES_INSTALL_PREFIX=${LIBRARIES_INSTALL_PREFIX} -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
     CMAKE_CACHE_ARGS    -DCMAKE_PREFIX_PATH:STRING="${LIBRARIES_INSTALL_PREFIX}/armadillo;${LIBRARIES_INSTALL_PREFIX}/mlpack;"
                         -DBOOST_ROOT:PATH=${LIBRARIES_INSTALL_PREFIX}/boost
                         -DGLFW3_ROOT:PATH=${LIBRARIES_INSTALL_PREFIX}/glfw
                         -DIMGUI_PATH:PATH=${IMGUI_SOURCE_DIR}
+                        -DIMPLOT_PATH:PATH=${IMPLOT_SOURCE_DIR}
     BUILD_ALWAYS        TRUE
     INSTALL_COMMAND     ""
 )
