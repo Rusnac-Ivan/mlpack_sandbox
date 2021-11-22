@@ -267,6 +267,54 @@ void View::OnUpdate()
 	}
 	ImGui::End();
 
+
+	if (ImGui::Begin("##draw", NULL))
+	{
+
+		static float values1[28][28] = {};
+		static bool is_fiiled = false;
+		if (!is_fiiled)
+		{
+			for (int i = 0; i < 28; i++)
+			{
+				for (int j = 0; j < 28; j++)
+				{
+					values1[i][j] = std::rand() % 101 / 100.f;
+				}
+			}
+			is_fiiled = true;
+		}
+		
+
+		static float scale_min = 0;
+		static float scale_max = 6.3f;
+
+		static ImPlotColormap map = ImPlotColormap_Viridis;
+		static ImPlotAxisFlags axes_flags = ImPlotAxisFlags_Lock;
+		if (ImPlot::BeginPlot("##Heatmap1", NULL, NULL, ImVec2(800, 800), ImPlotFlags_NoLegend | ImPlotFlags_NoMousePos, axes_flags, axes_flags)) 
+		{
+
+			ImPlot::PushColormap(map);
+
+			ImPlot::PlotHeatmap("heat", values1[0], 28, 28);
+
+			ImVec4 colf_y = ImVec4(0.f, 1.f, 0.f, 1.0f);
+			const ImU32 col_unreaded = ImColor(colf_y);
+
+			double xpos, ypos;
+			glfwGetCursorPos(mGLFWWindow, &xpos, &ypos);
+
+			ImVec2 general_pos = ImVec2(xpos, ypos); // ImGui::GetCursorScreenPos();
+
+			ImDrawList* draw_list = ImGui::GetWindowDrawList();
+			draw_list->AddCircleFilled(general_pos, 10.f, col_unreaded);
+
+			ImPlot::EndPlot();
+		}
+	}
+	ImGui::End();
+
+
 	// Rendering
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());

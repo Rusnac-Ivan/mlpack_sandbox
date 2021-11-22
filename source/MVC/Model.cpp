@@ -40,16 +40,15 @@ void Model::Train()
     const int INPUT_SIZE = mMnistTrainData.n_rows;
     const int OUTPUT_SIZE = 10;
 
-    mlpack::ann::FFN<> neural_network;
 
-    neural_network.Add<mlpack::ann::Linear<> >(INPUT_SIZE, L1);
-    neural_network.Add<mlpack::ann::SigmoidLayer<> >();
-    neural_network.Add<mlpack::ann::Linear<> >(L1, L2);
-    neural_network.Add<mlpack::ann::SigmoidLayer<> >();
-    neural_network.Add<mlpack::ann::Linear<> >(L2, OUTPUT_SIZE);
-    neural_network.Add<mlpack::ann::LogSoftMax<> >();
+    mNeuralNetwork.Add<mlpack::ann::Linear<> >(INPUT_SIZE, L1);
+    mNeuralNetwork.Add<mlpack::ann::SigmoidLayer<> >();
+    mNeuralNetwork.Add<mlpack::ann::Linear<> >(L1, L2);
+    mNeuralNetwork.Add<mlpack::ann::SigmoidLayer<> >();
+    mNeuralNetwork.Add<mlpack::ann::Linear<> >(L2, OUTPUT_SIZE);
+    mNeuralNetwork.Add<mlpack::ann::LogSoftMax<> >();
 
-
+    
 
     std::cout << "Start training ..." << std::endl;
 
@@ -66,7 +65,7 @@ void Model::Train()
         true
     );
 
-    neural_network.Train(
+    mNeuralNetwork.Train(
         mMnistTrainData,
         mMnistTrainLabels,
         optimizer,
@@ -78,7 +77,7 @@ void Model::Train()
     ens::EarlyStopAtMinLoss();
 
     arma::mat predictionTemp;
-    neural_network.Predict(mMnistTestData, predictionTemp);
+    mNeuralNetwork.Predict(mMnistTestData, predictionTemp);
 
     arma::mat prediction = arma::zeros<arma::mat>(1, predictionTemp.n_cols);
 
