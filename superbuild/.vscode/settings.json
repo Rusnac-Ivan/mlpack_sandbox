@@ -1,0 +1,13 @@
+{
+    "C_Cpp.updateChannel": "Insiders",
+    "cmake.configureOnOpen": true,
+    "editor.fontSize": 16,
+    "editor.tabSize": 4,
+    "editor.formatOnPaste": true,
+    "editor.formatOnSave": false,
+    "http.proxySupport": "off",
+    "cmake.buildDirectory": "${workspaceFolder}/../../build/${buildKitVendor}/${buildKitVersion}/${buildType}/",
+    "files.associations": {
+        "camera.h": "c"
+    }
+}

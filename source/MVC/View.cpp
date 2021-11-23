@@ -295,8 +295,9 @@ void View::OnUpdate()
 		{
 
 			ImPlot::PushColormap(map);
-
+			ImVec2 left_top = ImGui::GetCursorPos();
 			ImPlot::PlotHeatmap("heat", values1[0], 28, 28);
+
 
 			ImVec4 colf_y = ImVec4(0.f, 1.f, 0.f, 1.0f);
 			const ImU32 col_unreaded = ImColor(colf_y);
@@ -308,6 +309,8 @@ void View::OnUpdate()
 
 			ImDrawList* draw_list = ImGui::GetWindowDrawList();
 			draw_list->AddCircleFilled(general_pos, 10.f, col_unreaded);
+
+			draw_list->AddCircleFilled(left_top, 20.f, col_unreaded);
 
 			ImPlot::EndPlot();
 		}
