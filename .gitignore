@@ -5,3 +5,5 @@ include/mlpack_sandbox-version.h
 build/
 out/
 bin/
+# Ignore config directory
+*.vscode
