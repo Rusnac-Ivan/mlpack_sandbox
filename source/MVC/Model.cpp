@@ -31,9 +31,10 @@ void Model::Train()
 
     const int L1 = 200; //number of neurons in the first layer
     const int L2 = 100; //number of neurons in the second layer
+    const int L3 = 100; //number of neurons in the second layer
 
     const double RATIO = 0.1;
-    const int MAX_ITERATIONS = 1000000;
+    const int MAX_ITERATIONS = 500000;
     const double STEP_SIZE = 1.2e-3;
     const int BATCH_SIZE = 100;
 
@@ -45,7 +46,9 @@ void Model::Train()
     mNeuralNetwork.Add<mlpack::ann::SigmoidLayer<> >();
     mNeuralNetwork.Add<mlpack::ann::Linear<> >(L1, L2);
     mNeuralNetwork.Add<mlpack::ann::SigmoidLayer<> >();
-    mNeuralNetwork.Add<mlpack::ann::Linear<> >(L2, OUTPUT_SIZE);
+    mNeuralNetwork.Add<mlpack::ann::Linear<> >(L2, L3);
+    mNeuralNetwork.Add<mlpack::ann::SigmoidLayer<> >();
+    mNeuralNetwork.Add<mlpack::ann::Linear<> >(L3, OUTPUT_SIZE);
     mNeuralNetwork.Add<mlpack::ann::LogSoftMax<> >();
 
     
@@ -131,5 +134,5 @@ float Model::Predict(float data[][28])
 
     float r = prediction(0);
 
-    return r;
+    return r - 1.f;
 }

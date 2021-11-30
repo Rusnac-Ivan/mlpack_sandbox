@@ -272,7 +272,7 @@ void View::OnUpdate()
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.f, 0.f));
 	if (ImGui::Begin("##draw", NULL, ImGuiWindowFlags_NoTitleBar))
 	{
-		ImGui::Image((ImTextureID)mCanvas.GetGLTexID(), ImVec2(100.f, 100.f));
+		//ImGui::Image((ImTextureID)mCanvas.GetGLTexID(), ImVec2(100.f, 100.f));
 		static float values1[28][28] = {};
 		
 
@@ -305,35 +305,22 @@ void View::OnUpdate()
 			int state = glfwGetMouseButton(mGLFWWindow, GLFW_MOUSE_BUTTON_LEFT);
 			const float R = 40.f;
 			if (state == GLFW_PRESS && ImGui::IsItemHovered())
-			{
-				float center_x = xpos - left_top.x;
-				float center_y = ypos - left_top.y;
-
-				//int j = std::floor(center_x / 28.f);
-				//int i = std::floor(center_y / 28.f);
-
-				/*if (values1[i][j] < 1.f)
-					values1[i][j] += 0.2f;
-				if (values1[i][j] > 1.f)
-					values1[i][j] = 1.f;*/
-
-				
+			{				
 				for (int i = 0; i < 28; i++)
 				{
 					for (int j = 0; j < 28; j++)
 					{
 						ImVec4 colf_y = ImVec4(0.f, 1.f, 0.f, 0.5f);
 						const ImU32 col_unreaded = ImColor(colf_y);
-						ImVec2 cell_point = ImVec2(left_top.x + j * cell_size + cell_size / 2.f, left_top.x + i * cell_size - 4.f * cell_size - 8.f);
+						ImVec2 cell_point;
+						cell_point.x = left_top.x + j * cell_size + cell_size / 2.f;
+						cell_point.y = left_top.y + i * cell_size + cell_size / 2.f;
 
-						ImDrawList* draw_list = ImGui::GetWindowDrawList();
-						draw_list->AddCircleFilled(cell_point, 10, col_unreaded);
-
-						float d_x = center_x - cell_point.x;
-						float d_y = center_y - cell_point.y;
+						float d_x = xpos - cell_point.x;
+						float d_y = ypos - cell_point.y;
 
 						float radius = std::sqrt(d_x * d_x + d_y * d_y);
-						radius = radius / (R - 10.f);
+						radius = radius / (R + 10.f);
 
 						float new_val;
 						if (radius >= 0.f)
