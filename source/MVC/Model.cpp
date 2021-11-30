@@ -33,7 +33,7 @@ void Model::Train()
     const int L2 = 100; //number of neurons in the second layer
 
     const double RATIO = 0.1;
-    const int MAX_ITERATIONS = 100000;
+    const int MAX_ITERATIONS = 1000000;
     const double STEP_SIZE = 1.2e-3;
     const int BATCH_SIZE = 100;
 
@@ -69,6 +69,8 @@ void Model::Train()
         mMnistTrainData,
         mMnistTrainLabels,
         optimizer,
+        ens::PrintLoss(),
+        ens::ProgressBar(),
         *this
     );
 
@@ -80,7 +82,6 @@ void Model::Train()
     mNeuralNetwork.Predict(mMnistTestData, predictionTemp);
 
     arma::mat prediction = arma::zeros<arma::mat>(1, predictionTemp.n_cols);
-
 
     for (size_t i = 0; i < predictionTemp.n_cols; ++i)
     {
@@ -95,4 +96,40 @@ void Model::Train()
     std::cout << "\nClassification Error for the Test set: " << classificationError << std::endl;
 
     //data::Save("model.xml", "model", neural_network, false);
+}
+
+float Model::Predict(float data[][28])
+{
+    const int rows = 28, cols = 28;
+    arma::mat data_;
+    data_.resize(rows * cols, 1);
+
+    arma::colvec img_data(rows * cols);
+
+    for (uint32_t r = 0; r < rows; ++r)
+    {
+        for (uint32_t c = 0; c < cols; ++c)
+        {
+
+            double value = data[r][c];
+            img_data(r * cols + c) = value;
+        }
+    }
+    data_.col(0) = img_data;
+    //mNeuralNetwork.Evaluate()
+    arma::mat res;
+    mNeuralNetwork.Predict(data_, res);
+
+    arma::mat prediction = arma::zeros<arma::mat>(1, res.n_cols);
+
+    for (size_t i = 0; i < res.n_cols; ++i)
+    {
+        // we add 1 to the max index, so that it matches the actual test labels.
+        prediction(i) = arma::as_scalar(arma::find(
+            arma::max(res.col(i)) == res.col(i), 1)) + 1;
+    }
+
+    float r = prediction(0);
+
+    return r;
 }

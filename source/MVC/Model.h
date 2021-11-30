@@ -102,6 +102,8 @@ public:
 	}
 
 	void Train();
+
+	float Predict(float data[][28]);
 private:
 
 };

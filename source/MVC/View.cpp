@@ -157,6 +157,8 @@ void View::Create(unsigned int width, unsigned int height, const char* title)
 	glfwSetScrollCallback(mGLFWWindow, mouseScrollCallback);
 	glfwSetFramebufferSizeCallback(mGLFWWindow, framebufferSizeCallback);
 
+	mCanvas.Init(28, 28);
+
 	ImGuiStyle& style = ImGui::GetStyle();
 
 	style.FrameRounding = 0.f;
@@ -267,55 +269,131 @@ void View::OnUpdate()
 	}
 	ImGui::End();
 
-
-	if (ImGui::Begin("##draw", NULL))
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.f, 0.f));
+	if (ImGui::Begin("##draw", NULL, ImGuiWindowFlags_NoTitleBar))
 	{
-
+		ImGui::Image((ImTextureID)mCanvas.GetGLTexID(), ImVec2(100.f, 100.f));
 		static float values1[28][28] = {};
-		static bool is_fiiled = false;
-		if (!is_fiiled)
-		{
-			for (int i = 0; i < 28; i++)
-			{
-				for (int j = 0; j < 28; j++)
-				{
-					values1[i][j] = std::rand() % 101 / 100.f;
-				}
-			}
-			is_fiiled = true;
-		}
 		
 
 		static float scale_min = 0;
 		static float scale_max = 6.3f;
 
 		static ImPlotColormap map = ImPlotColormap_Viridis;
-		static ImPlotAxisFlags axes_flags = ImPlotAxisFlags_Lock;
-		if (ImPlot::BeginPlot("##Heatmap1", NULL, NULL, ImVec2(800, 800), ImPlotFlags_NoLegend | ImPlotFlags_NoMousePos, axes_flags, axes_flags)) 
+		static ImPlotAxisFlags axes_flags = ImPlotAxisFlags_Lock | ImPlotAxisFlags_NoDecorations;
+		ImPlot::PushStyleVar(ImPlotStyleVar_PlotPadding, ImVec2(0.f, 0.f));
+		float size = 800.f;
+		ImVec2 tab_size = ImVec2(size, size);
+		ImVec2 left_top = ImGui::GetCursorPos();
+		left_top.x = ImGui::GetWindowPos().x;
+		left_top.y = ImGui::GetWindowPos().y;
+		const int16_t rows = 28, cols = 28;
+		float cell_size = size / cols;
+		if (ImPlot::BeginPlot("##Heatmap1", NULL, NULL, tab_size, ImPlotFlags_CanvasOnly, axes_flags, axes_flags))
 		{
-
+			
 			ImPlot::PushColormap(map);
-			ImVec2 left_top = ImGui::GetCursorPos();
-			ImPlot::PlotHeatmap("heat", values1[0], 28, 28);
+			//ImVec2 left_top = ImVec2(ImGui::GetCursorPos().x + ImGui::GetWindowPos().x, ImGui::GetCursorPos().y + ImGui::GetWindowPos().y);
+			ImPlot::PlotHeatmap("heat", values1[0], rows, cols);
+			
 
-
-			ImVec4 colf_y = ImVec4(0.f, 1.f, 0.f, 1.0f);
+			ImVec4 colf_y = ImVec4(0.f, 1.f, 0.f, 1.f);
 			const ImU32 col_unreaded = ImColor(colf_y);
 
 			double xpos, ypos;
 			glfwGetCursorPos(mGLFWWindow, &xpos, &ypos);
+			int state = glfwGetMouseButton(mGLFWWindow, GLFW_MOUSE_BUTTON_LEFT);
+			const float R = 40.f;
+			if (state == GLFW_PRESS && ImGui::IsItemHovered())
+			{
+				float center_x = xpos - left_top.x;
+				float center_y = ypos - left_top.y;
+
+				//int j = std::floor(center_x / 28.f);
+				//int i = std::floor(center_y / 28.f);
+
+				/*if (values1[i][j] < 1.f)
+					values1[i][j] += 0.2f;
+				if (values1[i][j] > 1.f)
+					values1[i][j] = 1.f;*/
+
+				
+				for (int i = 0; i < 28; i++)
+				{
+					for (int j = 0; j < 28; j++)
+					{
+						ImVec4 colf_y = ImVec4(0.f, 1.f, 0.f, 0.5f);
+						const ImU32 col_unreaded = ImColor(colf_y);
+						ImVec2 cell_point = ImVec2(left_top.x + j * cell_size + cell_size / 2.f, left_top.x + i * cell_size - 4.f * cell_size - 8.f);
+
+						ImDrawList* draw_list = ImGui::GetWindowDrawList();
+						draw_list->AddCircleFilled(cell_point, 10, col_unreaded);
+
+						float d_x = center_x - cell_point.x;
+						float d_y = center_y - cell_point.y;
+
+						float radius = std::sqrt(d_x * d_x + d_y * d_y);
+						radius = radius / (R - 10.f);
+
+						float new_val;
+						if (radius >= 0.f)
+							new_val = 1.f / (1.f + std::pow(M_E, 7.f * (radius - 0.5f)));
+						else
+							new_val = 0.f;
+
+						if (new_val > 1.f)
+							new_val = 1.f;
+
+						if (radius > 0.f && new_val <= 1 && values1[i][j] < new_val)
+						{
+							values1[i][j] = new_val;
+						}
+							
+						if (radius > 1.f)
+						{
+							int a = 0;
+						}
+					}
+				}
+			}
+
+
+
 
 			ImVec2 general_pos = ImVec2(xpos, ypos); // ImGui::GetCursorScreenPos();
 
 			ImDrawList* draw_list = ImGui::GetWindowDrawList();
-			draw_list->AddCircleFilled(general_pos, 10.f, col_unreaded);
+			draw_list->AddCircleFilled(general_pos, R, col_unreaded);
 
-			draw_list->AddCircleFilled(left_top, 20.f, col_unreaded);
+			//draw_list->AddCircleFilled(left_top, 20.f, col_unreaded);
 
 			ImPlot::EndPlot();
 		}
+		ImPlot::PopStyleVar();
+
+		if (ImGui::Button("Clear", ImVec2(80.f, 20.f)))
+		{
+			for (int i = 0; i < 28; i++)
+			{
+				for (int j = 0; j < 28; j++)
+				{
+					values1[i][j] = 0.f;
+				}
+			}
+		}
+		ImGui::SameLine();
+		static double val = -1;
+		if (ImGui::Button("Eval", ImVec2(80.f, 20.f)))
+		{
+			val = mModel->Predict(values1);
+		}
+		ImGui::Text(std::to_string(val).c_str());
+
 	}
 	ImGui::End();
+	ImGui::PopStyleVar();
+
+
 
 
 	// Rendering
