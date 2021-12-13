@@ -172,38 +172,6 @@ void View::Create(unsigned int width, unsigned int height, const char* title)
 	style.WindowPadding = ImVec2(2.f, 2.f);
 	style.ItemInnerSpacing = ImVec2(4.f, 4.f);
 
-
-	/*float active_col_white[3] = {0.8f, 0.8f, 0.8f};
-	float hover_col_white[3] = { 0.7f, 0.7f, 0.7f };
-	float default_col_white[3] = { 0.6f, 0.6f, 0.6f };
-
-	float default_col[3] = { 66.f / 255.f, 68.f / 255.f, 69.f / 255.f };
-	float hover_col[3] = { 56.f / 255.f, 58.f / 255.f, 59.f / 255.f };
-	float active_col[3] = { 46.f / 255.f, 48.f / 255.f, 49.f / 255.f };
-
-	style.Colors[ImGuiCol_WindowBg] = ImVec4(0.25f, 0.25f, 0.25f, 0.8f);
-	style.Colors[ImGuiCol_TitleBg] = ImVec4(default_col[0], default_col[1], default_col[2], 1.f);
-	style.Colors[ImGuiCol_TitleBgActive] = ImVec4(active_col[0], active_col[1], active_col[2], 1.f);
-	style.Colors[ImGuiCol_SliderGrab] = ImVec4(default_col[0], default_col[1], default_col[2], 1.f);
-	style.Colors[ImGuiCol_SliderGrabActive] = ImVec4(active_col[0], active_col[1], active_col[2], 1.f);
-	style.Colors[ImGuiCol_Header] = ImVec4(default_col[0], default_col[1], default_col[2], 1.f);
-	style.Colors[ImGuiCol_HeaderHovered] = ImVec4(hover_col[0], hover_col[1], hover_col[2], 1.f);
-	style.Colors[ImGuiCol_HeaderActive] = ImVec4(active_col[0], active_col[1], active_col[2], 1.f);
-	style.Colors[ImGuiCol_FrameBg] = ImVec4(active_col_white[0], active_col_white[1], active_col_white[2], 0.16f);
-	style.Colors[ImGuiCol_FrameBgHovered] = ImVec4(active_col_white[0], active_col_white[1], active_col_white[2], 0.32f);
-	style.Colors[ImGuiCol_FrameBgActive] = ImVec4(active_col_white[0], active_col_white[1], active_col_white[2], 0.48f);
-	style.Colors[ImGuiCol_CheckMark] = ImVec4(active_col_white[0], active_col_white[1], active_col_white[2], 1.0f);
-	style.Colors[ImGuiCol_Tab] = ImVec4(default_col[0], default_col[1], default_col[2], 0.5f);
-	style.Colors[ImGuiCol_TabHovered] = ImVec4(hover_col[0], hover_col[1], hover_col[2], 1.0f);
-	style.Colors[ImGuiCol_TabActive] = ImVec4(active_col[0], active_col[1], active_col[2], 1.0f);
-	style.Colors[ImGuiCol_ResizeGrip] = ImVec4(active_col[0], active_col[1], active_col[2], 0.2f);
-	style.Colors[ImGuiCol_ResizeGripHovered] = ImVec4(active_col[0], active_col[1], active_col[2], 0.4f);
-	style.Colors[ImGuiCol_ResizeGripActive] = ImVec4(active_col[0], active_col[1], active_col[2], 0.6f);
-	style.Colors[ImGuiCol_Separator] = ImVec4(active_col[0], active_col[1], active_col[2], 0.6f);
-	style.Colors[ImGuiCol_Button] = ImVec4(default_col[0], default_col[1], default_col[2], 1.0f);
-	style.Colors[ImGuiCol_ButtonHovered] = ImVec4(active_col_white[0], active_col_white[1], active_col_white[2], 0.6f);
-	style.Colors[ImGuiCol_ButtonActive] = ImVec4(active_col_white[0], active_col_white[1], active_col_white[2], 1.0f);
-	style.Colors[ImGuiCol_Text] = ImVec4(1.f, 1.f, 1.f, 1.f);*/
 }
 
 void View::Destroy()
@@ -246,6 +214,26 @@ void View::OnUpdate()
 	ImGui::ShowDemoWindow();
 
 	ImPlot::ShowDemoWindow();
+
+
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(5.f, 5.f));
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 10.f);
+	ImGui::Begin("Gradient");
+	{
+		ImVec2 p0 = ImGui::GetWindowPos();
+		ImVec2 p1 = ImVec2(p0.x + ImGui::GetWindowSize().x, p0.y + ImGui::GetWindowSize().y);
+		ImU32 col_a = ImGui::GetColorU32(IM_COL32(0, 0, 0, 255));
+		ImU32 col_b = ImGui::GetColorU32(IM_COL32(255, 255, 255, 255));
+
+		ImDrawList* draw_list = ImGui::GetWindowDrawList(); //ImGui::GetBackgroundDrawList();
+		draw_list->AddRectFilledMultiColor(p0, p1, col_a, col_a, col_b, col_b);
+
+	}
+	ImGui::End();
+	ImGui::PopStyleVar(2);
+	
+
+
 
 	ImGui::SetNextWindowSize(ImVec2(500.f, 400.f), ImGuiCond_FirstUseEver);
 	ImGui::Begin("Data", nullptr);
