@@ -216,7 +216,7 @@ void View::OnUpdate()
 	ImPlot::ShowDemoWindow();
 
 
-	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(5.f, 5.f));
+	/*ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(5.f, 5.f));
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 10.f);
 	ImGui::Begin("Gradient");
 	{
@@ -230,7 +230,7 @@ void View::OnUpdate()
 
 	}
 	ImGui::End();
-	ImGui::PopStyleVar(2);
+	ImGui::PopStyleVar(2);*/
 	
 
 
