@@ -157,7 +157,6 @@ void View::Create(unsigned int width, unsigned int height, const char* title)
 	glfwSetScrollCallback(mGLFWWindow, mouseScrollCallback);
 	glfwSetFramebufferSizeCallback(mGLFWWindow, framebufferSizeCallback);
 
-	mCanvas.Init(28, 28);
 
 	ImGuiStyle& style = ImGui::GetStyle();
 

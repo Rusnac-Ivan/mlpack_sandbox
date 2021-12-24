@@ -17,7 +17,9 @@ class Model
 	arma::mat mMnistTestLabels;
 	arma::mat mMnistTestData;
 
-	mlpack::ann::FFN<> mNeuralNetwork;
+	mlpack::ann::FFN<mlpack::ann::NegativeLogLikelihood<>, mlpack::ann::RandomInitialization> mNeuralNetwork;
+
+	//std::unique_ptr<>
 
 	std::vector<float> mValues;
 	std::vector<float> mGradients;

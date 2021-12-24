@@ -4,7 +4,6 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <MVC/Model.h>
-#include "../GLCanvas.h"
 
 class View
 {
@@ -15,7 +14,6 @@ class View
         std::thread mThread;
         Model* mModel;
 
-        GLCanvas mCanvas;
     public:
         View();
         ~View();
