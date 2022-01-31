@@ -34,7 +34,7 @@ void Model::Train()
     const int L3 = 100; //number of neurons in the second layer
 
     const double RATIO = 0.1;
-    const int MAX_ITERATIONS = 500000;
+    const int MAX_ITERATIONS = 80'000;
     const double STEP_SIZE = 1.2e-3;
     const int BATCH_SIZE = 100;
 
@@ -42,16 +42,80 @@ void Model::Train()
     const int OUTPUT_SIZE = 10;
 
 
-    mNeuralNetwork.Add<mlpack::ann::Linear<> >(INPUT_SIZE, L1);
+    /*mNeuralNetwork.Add<mlpack::ann::Linear<> >(INPUT_SIZE, L1);
     mNeuralNetwork.Add<mlpack::ann::SigmoidLayer<> >();
     mNeuralNetwork.Add<mlpack::ann::Linear<> >(L1, L2);
     mNeuralNetwork.Add<mlpack::ann::SigmoidLayer<> >();
     mNeuralNetwork.Add<mlpack::ann::Linear<> >(L2, L3);
     mNeuralNetwork.Add<mlpack::ann::SigmoidLayer<> >();
     mNeuralNetwork.Add<mlpack::ann::Linear<> >(L3, OUTPUT_SIZE);
-    mNeuralNetwork.Add<mlpack::ann::LogSoftMax<> >();
+    mNeuralNetwork.Add<mlpack::ann::LogSoftMax<> >();*/
 
-    
+
+    // Specify the model architecture.
+    // In this example, the CNN architecture is chosen similar to LeNet-5.
+    // The architecture follows a Conv-ReLU-Pool-Conv-ReLU-Pool-Dense schema. We
+    // have used leaky ReLU activation instead of vanilla ReLU. Standard
+    // max-pooling has been used for pooling. The first convolution uses 6 filters
+    // of size 5x5 (and a stride of 1). The second convolution uses 16 filters of
+    // size 5x5 (stride = 1). The final dense layer is connected to a softmax to
+    // ensure that we get a valid probability distribution over the output classes
+
+    // Layers schema.
+    // 28x28x1 --- conv (6 filters of size 5x5. stride = 1) ---> 24x24x6
+    // 24x24x6 --------------- Leaky ReLU ---------------------> 24x24x6
+    // 24x24x6 --- max pooling (over 2x2 fields. stride = 2) --> 12x12x6
+    // 12x12x6 --- conv (16 filters of size 5x5. stride = 1) --> 8x8x16
+    // 8x8x16  --------------- Leaky ReLU ---------------------> 8x8x16
+    // 8x8x16  --- max pooling (over 2x2 fields. stride = 2) --> 4x4x16
+    // 4x4x16  ------------------- Dense ----------------------> 10
+
+    // Add the first convolution layer.
+    mNeuralNetwork.Add<mlpack::ann::Convolution<>>(1,  // Number of input activation maps.
+        6,  // Number of output activation maps.
+        5,  // Filter width.
+        5,  // Filter height.
+        1,  // Stride along width.
+        1,  // Stride along height.
+        0,  // Padding width.
+        0,  // Padding height.
+        28, // Input width.
+        28  // Input height.
+        );
+
+    // Add first ReLU.
+    mNeuralNetwork.Add<mlpack::ann::LeakyReLU<>>();
+
+    // Add first pooling layer. Pools over 2x2 fields in the input.
+    mNeuralNetwork.Add<mlpack::ann::MaxPooling<>>(2, // Width of field.
+        2, // Height of field.
+        2, // Stride along width.
+        2, // Stride along height.
+        true);
+
+    // Add the second convolution layer.
+    mNeuralNetwork.Add<mlpack::ann::Convolution<>>(6,  // Number of input activation maps.
+        16, // Number of output activation maps.
+        5,  // Filter width.
+        5,  // Filter height.
+        1,  // Stride along width.
+        1,  // Stride along height.
+        0,  // Padding width.
+        0,  // Padding height.
+        12, // Input width.
+        12  // Input height.
+        );
+
+    // Add the second ReLU.
+    mNeuralNetwork.Add<mlpack::ann::LeakyReLU<>>();
+
+    // Add the second pooling layer.
+    mNeuralNetwork.Add<mlpack::ann::MaxPooling<>>(2, 2, 2, 2, true);
+
+    // Add the final dense layer.
+    mNeuralNetwork.Add<mlpack::ann::Linear<>>(16 * 4 * 4, 10);
+    mNeuralNetwork.Add<mlpack::ann::LogSoftMax<>>();
+
 
     std::cout << "Start training ..." << std::endl;
 
@@ -77,9 +141,9 @@ void Model::Train()
         *this
     );
 
-    ens::PrintLoss();
-    ens::ProgressBar();
-    ens::EarlyStopAtMinLoss();
+    //ens::PrintLoss();
+    //ens::ProgressBar();
+    //ens::EarlyStopAtMinLoss();
 
     arma::mat predictionTemp;
     mNeuralNetwork.Predict(mMnistTestData, predictionTemp);

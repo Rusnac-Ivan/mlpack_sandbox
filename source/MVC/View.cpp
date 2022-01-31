@@ -284,7 +284,7 @@ void View::OnUpdate()
 			ImPlot::PlotHeatmap("heat", values1[0], rows, cols);
 			
 
-			ImVec4 colf_y = ImVec4(0.f, 1.f, 0.f, 1.f);
+			ImVec4 colf_y = ImVec4(0.8f, 0.8f, 0.f, 1.f);
 			const ImU32 col_unreaded = ImColor(colf_y);
 
 			double xpos, ypos;
