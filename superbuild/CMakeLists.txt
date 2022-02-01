@@ -68,7 +68,7 @@ ExternalProject_Add(boost
 ExternalProject_Add(armadillo
     PREFIX                  ${LIBRARIES_PREFIX}/armadillo
     GIT_REPOSITORY          https://gitlab.com/conradsnicta/armadillo-code.git
-    GIT_TAG                 10.7.x
+    GIT_TAG                 10.8.x
     CMAKE_ARGS              -DCMAKE_INSTALL_PREFIX:PATH=${LIBRARIES_INSTALL_PREFIX}/armadillo #-DCMAKE_DEBUG_POSTFIX=$<$<CONFIG:Debug>:d>  they dont support this now
     UPDATE_DISCONNECTED     TRUE
     UPDATE_COMMAND          ""
